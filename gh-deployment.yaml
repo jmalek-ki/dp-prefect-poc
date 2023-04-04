@@ -1,0 +1,57 @@
+###
+### A complete description of a Prefect Deployment for flow 'api-workflow'
+###
+name: gh-deployment
+description: null
+version: b10dba35c6fd51121395b43c74ddddb0
+# The work queue that will handle this deployment's runs
+work_queue_name: default
+work_pool_name: default-agent-pool
+tags: []
+parameters:
+  url: https://catfact.ninja/fact
+schedule: null
+is_schedule_active: true
+infra_overrides: {}
+
+###
+### DO NOT EDIT BELOW THIS LINE
+###
+flow_name: api-workflow
+manifest_path: null
+infrastructure:
+  type: process
+  env: {}
+  labels: {}
+  name: null
+  command: null
+  stream_output: true
+  working_dir: null
+  _block_document_id: 4ccd7ad4-c047-4a2c-8707-d7ccf88611c3
+  _block_document_name: anonymous-fe482a28-bba3-4981-94d7-bc583e959fd1
+  _is_anonymous: true
+  block_type_slug: process
+  _block_type_slug: process
+storage:
+  repository: https://github.com/jmalek-ki/dp-prefect-poc
+  reference: workflows
+  access_token: null
+  include_git_objects: true
+  _block_document_id: 00a44502-6d15-4997-ae2b-2a7bfcf63b57
+  _block_document_name: poc-repo
+  _is_anonymous: false
+  block_type_slug: github
+  _block_type_slug: github
+path: ''
+entrypoint: workflows/pocflow.py:api_workflow
+parameter_openapi_schema:
+  title: Parameters
+  type: object
+  properties:
+    url:
+      title: url
+      position: 0
+  required:
+  - url
+  definitions: null
+timestamp: '2023-04-04T12:01:38.638203+00:00'
