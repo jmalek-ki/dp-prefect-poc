@@ -17,11 +17,11 @@ def parse_fact(response):
 
 
 @flow
-def api_flow(url):
+def api_workflow(url):
     fact_json = call_api(url)
     fact_text = parse_fact(fact_json)
     return fact_text
 
 
 if __name__ == '__main__':
-    api_flow("https://catfact.ninja/fact")
+    api_workflow("https://catfact.ninja/fact")
