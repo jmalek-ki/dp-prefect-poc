@@ -23,5 +23,8 @@ def api_workflow(url):
     return fact_text
 
 
+# Convention, to make it easy to autodiscover by scripts:
+entrypoint = api_workflow
+
 if __name__ == '__main__':
     api_workflow("https://catfact.ninja/fact")
