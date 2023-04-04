@@ -1,0 +1,19 @@
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+
+### VS Code ###
+.vscode/
+
+## Terraform ##
+**/.terraform/
+**/.terragrunt-cache/
+
+### Others ###
+.DS_Store
+**/provider.tf
+
+### Project-specific ###
+/workflows/
