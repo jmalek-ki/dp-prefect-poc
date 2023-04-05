@@ -4,7 +4,7 @@ from prefect import flow, task
 
 @task
 def call_api(url):
-    response = requests.get(url)
+    response = requests.get(url, verify=False)
     print(response.status_code)
     return response.json()
 
