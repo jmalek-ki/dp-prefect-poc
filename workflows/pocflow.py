@@ -22,7 +22,7 @@ def parse_fact(response):
 def create_artifact(fact):
     now_time = str(datetime.datetime.utcnow())
     artifact_id = create_markdown_artifact(
-        key=now_time.lower(),
+        key=f"catfact-{str(hash(now_time)).lower()}",
         description=f"Your cat fact for {now_time}!",
         markdown=f"# Fact:\n\n{fact}"
     )
