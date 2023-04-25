@@ -1,9 +1,10 @@
-import asyncio
+from prefect.utilities.asyncutils import sync_compatible
 
 from prefect.filesystems import GitHub
 from prefect_poc import PROJECT_ROOT_DIR, WORKFLOW_DIR_SUFFIX
 
 
+@sync_compatible
 async def build_block(workflow_dir=PROJECT_ROOT_DIR):
     block = GitHub(
         repository="https://github.com/jmalek-ki/dp-prefect-poc",
@@ -16,4 +17,4 @@ async def build_block(workflow_dir=PROJECT_ROOT_DIR):
 
 
 if __name__ == '__main__':
-    asyncio.run(build_block())
+    build_block()
