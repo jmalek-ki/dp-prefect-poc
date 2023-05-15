@@ -1,7 +1,10 @@
 import functools
 
 from prefect import flow, task
+from prefect.utilities.asyncutils import sync_compatible
 from prefect_gcp.bigquery import GcpCredentials, BigQueryWarehouse
+
+GCP_CREDS_BLOCK_NAME = "data-platform-gcp"
 
 
 # This is a 'library' of CTEs for OEP queries.
@@ -812,6 +815,15 @@ WITH
 
 
 @functools.lru_cache(maxsize=1)
+def intermediate_cache_query():
+    """The OEP query is *too big for the query planner* ATM.
+    As such, we need to split it up in two steps - calculate first handful of JOINs into a temp table,
+    then use that table for downstream queries. This returns the query to handle the former.
+    """
+    return OEP_CTE_LIBRARY.format(actual_query="SELECT * FROM AirLossJoinPoliciesPolicyViewAndQuotes")
+
+
+@functools.lru_cache(maxsize=1)
 def results_query():
     """Returns the primary outputs - predicted loss curves for all GroupClasses/Events/etc."""
     return OEP_CTE_LIBRARY.format(actual_query="SELECT * FROM Results")
@@ -823,17 +835,38 @@ def health_metrics_query():
     return OEP_CTE_LIBRARY.format(actual_query="SELECT * FROM TestAggregateEstimationError")
 
 
+@sync_compatible
+async def run_query(query: str, warehouse: BigQueryWarehouse, **params):
+    """Thin abstraction over Prefect's BQ execution model to ensure awaits & sync compatibility"""
+    result = await warehouse.execute(
+        query,
+        parameters=params
+    )
+    return result
+
+
 # Begin Prefect workflow code:
 
 @flow()
 def run_oep_query():
-    gcp_credentials = GcpCredentials.load("BLOCK-NAME-PLACEHOLDER")
-    query_params = {}
+    gcp_credentials = GcpCredentials.load(GCP_CREDS_BLOCK_NAME)
+    intermediate_query_params = {}
+    results_query_params = {}
+
+    intermediate_query = intermediate_cache_query()
+    final_query = results_query()
 
     with BigQueryWarehouse(gcp_credentials=gcp_credentials) as warehouse:
-        warehouse.execute(
-            results_query(),
-            parameters=query_params
+        run_query(
+            intermediate_query,
+            warehouse,
+            **intermediate_query_params
+        )
+
+        run_query(
+            final_query,
+            warehouse,
+            **results_query_params
         )
 
     return
