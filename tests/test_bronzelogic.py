@@ -2,7 +2,7 @@ import datetime
 
 import freezegun
 
-from workflows import bronzelogic
+from utilitites import bronzelogic
 
 MOCK_TIME_ISO = "2020-01-01T22:11"
 MOCK_TIME_DATETIME = datetime.datetime.fromisoformat(MOCK_TIME_ISO)
