@@ -8,12 +8,8 @@ from prefect_gcp.cloud_storage import GcpCredentials, GcsBucket, cloud_storage_c
 
 GCP_CREDS_BLOCK_NAME = "data-platform-gcp"
 
-BlobName = typing.NewType("BlobName", str)
-BlobNameRelaxed = typing.Union[BlobName, str]
-
-GcsBucketName = typing.NewType("GcsBucketName", str)
-GcsBucketNameRelaxed = typing.Union[GcsBucketName, str]
-
+BlobName = str
+GcsBucketName = str
 VersioningStrategyFn = typing.Callable[[BlobName, GcsBucketName, GcsBucketName], BlobName]
 
 
@@ -27,8 +23,19 @@ def date_hrs_minutes_versioning(blob_name: BlobName, *args, **kwargs) -> BlobNam
     """
     now = datetime.datetime.utcnow().isoformat(timespec="minutes")
     trg_blob_name = "/".join((now, blob_name))
+    return trg_blob_name
 
-    trg_blob_name = typing.cast(trg_blob_name, BlobName)
+
+def date_hour_versioning(blob_name: str, *args, **kwargs) -> str:
+    """Simple versioning strategy - puts each blob in a subfolder indicating
+    the time of the copy process in the ISO datetime format with a precision
+    of *hours*, e.g. 'importantdata.json' => '2023-01-13T06'
+
+    :param blob_name: Input filename. Required to compute the output.
+    :return: Filename with the version prefix attached.
+    """
+    now = datetime.datetime.utcnow().isoformat(timespec="hours") + ":00"
+    trg_blob_name = "/".join((now, blob_name))
     return trg_blob_name
 
 
@@ -103,9 +110,9 @@ version_blob_flow = flow(
 @flow()
 @sync_compatible
 async def version_all(
-    src_bucket: GcsBucketNameRelaxed,
+    src_bucket: GcsBucketName,
     src_folder: str = None,
-    trg_bucket: GcsBucketNameRelaxed = None,
+    trg_bucket: GcsBucketName = None,
     versioning_strategy: VersioningStrategyFn = None,
     gcp_creds: GcpCredentials = None
 ):
@@ -128,13 +135,3 @@ async def version_all(
     )
 
     return results
-
-
-if __name__ == '__main__':
-    TEST_BLOB_NAME = "test.json"
-    TEST_BUCKET_NAME = "example-bucket-data-prefect-dev"
-
-    version_blob_flow(
-        blob_name=TEST_BLOB_NAME,
-        src_bucket_name=TEST_BUCKET_NAME
-    )
