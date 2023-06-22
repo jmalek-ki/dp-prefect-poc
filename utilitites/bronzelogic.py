@@ -95,7 +95,6 @@ async def _version_blob(
         gcp_credentials=gcp_credentials
     )
 
-    copied_blob_name = typing.cast(copied_blob_name, BlobName)
     return copied_blob_name
 
 
