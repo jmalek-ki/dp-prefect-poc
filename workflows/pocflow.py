@@ -31,6 +31,15 @@ def create_artifact(fact):
 
 @flow
 def api_workflow(url):
+    """A PoC flow that queries an API - expected to be the free Cat Facts API at:
+     https://catfact.ninja/fact and parses the response. *Technically*, other APIs
+     would be supported, but they'd have to follow the same conventions.
+
+     This Flow is intended purely as a cheap demo of a Prefect-managed flow in an
+     external storage (GitHub, in this case)
+
+    :param url: API URL to query.
+    """
     fact_json = call_api(url)
     fact_text = parse_fact(fact_json)
     create_artifact(fact_text)
