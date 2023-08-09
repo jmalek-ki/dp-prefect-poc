@@ -7,13 +7,8 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.9"
-prefect = { version = "^2.10.21", extras = ["all"] }
-pydantic = { version = "<2.0.0" }
+prefect = { version = "^2.8.7", extras = ["all"] }
 prefect-gcp = "^0.4.1"
-dbt-postgres = "^1.5.2"
-dbt-bigquery = "^1.5.3"
-pytest = "^7.4.0"
-hypothesis = "^6.82.0"
 
 
 [build-system]
