@@ -1,23 +1,23 @@
 from prefect import flow, task
-from time import sleep
+from asyncio import sleep, run
 
 
 @task
-def wait(seconds):
+async def wait(seconds):
     print(f"Sleeping for {seconds} seconds.")
-    sleep(seconds)
+    await sleep(seconds)
     return None
 
 
 @flow
-def subflow(seconds):
-    wait(seconds)
+async def subflow(seconds):
+    await wait(seconds)
     return None
 
 
 @flow
-def bigflow(seconds):
-    subflow(seconds)
+async def bigflow(seconds):
+    await subflow(seconds)
     return None
 
 
@@ -25,4 +25,4 @@ def bigflow(seconds):
 entrypoint = bigflow
 
 if __name__ == "__main__":
-    bigflow(30)
+    run(bigflow(30))
