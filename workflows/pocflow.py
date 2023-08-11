@@ -29,7 +29,7 @@ def create_artifact(fact):
     return artifact_id
 
 
-@flow
+@flow(flow_run_name="{flow_name}-{flow_run.scheduled_start_time}")
 def api_workflow(url):
     """A PoC flow that queries an API - expected to be the free Cat Facts API at:
      https://catfact.ninja/fact and parses the response. *Technically*, other APIs
